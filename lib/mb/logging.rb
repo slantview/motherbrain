@@ -22,8 +22,7 @@ module MotherBrain
       #
       # @return [Logger]
       def setup(options = {})
-        level = Logger::WARN
-        level = Logger::INFO if options[:verbose]
+        level = Logger::INFO
         level = Logger::DEBUG if options[:debug]
 
         location = options[:logfile]

@@ -32,13 +32,13 @@ module MotherBrain
             
             plugin.send(:context).environment = environment
 
-            MB.ui.say "Listing nodes in '#{environment}':"
+            MB.log.info "Listing nodes in '#{environment}':"
             nodes = plugin.nodes.each do |component, groups|
               groups.each do |group, nodes|
                 nodes.collect! { |node| "#{node.public_hostname} (#{node.public_ipv4})" }
               end
             end
-            MB.ui.say nodes.to_yaml
+            MB.log.info nodes.to_yaml
           end
 
           if plugin.bootstrap_routine.present?
@@ -101,13 +101,13 @@ module MotherBrain
                 }
               }
 
-              MB.ui.say "Starting bootstrap of nodes on: #{environment}"
+              MB.log.info "Starting bootstrap of nodes on: #{environment}"
 
               ChefMutex.new(environment, context.chef_conn).synchronize do
-                MB.ui.say MB::Application.bootstrap(manifest, plugin.bootstrap_routine, bootstrap_options)
+                MB.log.info MB::Application.bootstrap(manifest, plugin.bootstrap_routine, bootstrap_options)
               end
 
-              MB.ui.say "Bootstrap finished"
+              MB.log.info "Bootstrap finished"
             end
 
             method_option :api_url,
@@ -168,15 +168,15 @@ module MotherBrain
                 }
               }
 
-              MB.ui.say "Provisioning nodes and adding them to: #{environment}"
+              MB.log.info "Provisioning nodes and adding them to: #{environment}"
               response = MB::Application.provision(environment, manifest, plugin, provisioner_options)
 
               if response.ok?
-                MB.ui.say "Provision finished"
+                MB.log.info "Provision finished"
 
                 if options[:skip_bootstrap]
-                  MB.ui.say "Skipping bootstrap"
-                  MB.ui.say response.body
+                  MB.log.info "Skipping bootstrap"
+                  MB.log.info response.body
                   exit 0
                 end
 
@@ -189,7 +189,7 @@ module MotherBrain
 
                 invoke(:bootstrap, [environment, bootstrap_manifest.path], options)
               else
-                MB.ui.error response.body.to_s
+                MB.log.error response.body.to_s
                 exit 1
               end
             end
@@ -217,7 +217,7 @@ module MotherBrain
 
     desc "version", "Display plugin version"
     def version
-      MB.ui.say self.class.plugin.version
+      MB.log.info self.class.plugin.version
     end
   end
 end

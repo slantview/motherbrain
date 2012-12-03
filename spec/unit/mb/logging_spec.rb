@@ -23,14 +23,8 @@ describe MB::Logging do
         klass.setup options
       end
 
-      it "defaults to WARN" do
-        logger.warn?.should be_true
-      end
-
-      context "with :verbose" do
-        let(:options) { { verbose: true } }
-
-        its(:info?) { should be_true }
+      it "defaults to INFO" do
+        logger.info?.should be_true
       end
 
       context "with :debug" do

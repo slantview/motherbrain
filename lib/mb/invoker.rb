@@ -76,7 +76,7 @@ module MotherBrain
       @config.ssh_password     = MB.ui.ask "Enter a SSH password: "
       @config.save
 
-      MB.ui.say "Config written to: '#{path}'"
+      MB.log.info "Config written to: '#{path}'"
     end
 
     desc "plugins", "Display all installed plugins and versions"
@@ -84,15 +84,15 @@ module MotherBrain
       if self.class.plugin_loader.plugins.empty?
         paths = self.class.plugin_loader.paths.to_a.collect { |path| "'#{path}'" }
 
-        MB.ui.say "No MotherBrain plugins found in any of your configured plugin paths!"
-        MB.ui.say "\n"
-        MB.ui.say "Paths: #{paths.join(', ')}"
+        MB.log.info "No MotherBrain plugins found in any of your configured plugin paths!"
+        MB.log.info "\n"
+        MB.log.info "Paths: #{paths.join(', ')}"
         exit(0)
       end
 
       self.class.plugin_loader.plugins.group_by(&:name).each do |name, plugins|
         versions = plugins.collect(&:version).reverse!
-        MB.ui.say "#{name}: #{versions.join(', ')}"
+        MB.log.info "#{name}: #{versions.join(', ')}"
       end
     end
 
@@ -123,9 +123,9 @@ module MotherBrain
 
     desc "version", "Display version and license information"
     def version
-      MB.ui.say version_header
-      MB.ui.say "\n"
-      MB.ui.say license
+      MB.log.info version_header
+      MB.log.info "\n"
+      MB.log.info license
     end
 
     private

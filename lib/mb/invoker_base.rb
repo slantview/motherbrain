@@ -46,7 +46,7 @@ module MotherBrain
         @context = self.class.configure(self.options)
       end
 
-      MB::Logging.setup @options.slice(:logfile, :verbose, :debug)
+      MB::Logging.setup @options.slice(:logfile, :debug)
     end
 
     class_option :config,
@@ -54,11 +54,6 @@ module MotherBrain
       desc: "Path to a MotherBrain JSON configuration file.",
       aliases: "-c",
       banner: "PATH"
-    class_option :verbose,
-      type: :boolean,
-      desc: "Increase verbosity of output.",
-      default: false,
-      aliases: "-v"
     class_option :debug,
       type: :boolean,
       desc: "Output all log messages.",
