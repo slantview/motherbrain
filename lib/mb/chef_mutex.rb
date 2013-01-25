@@ -221,6 +221,10 @@ module MotherBrain
         ENV['RUBY_ENV'] == 'test'
       end
 
+      def finalize
+        attempt_unlock
+      end
+
       # @return [Ridley::DBIChainLink] if the data bag exists
       # @return [nil] if it does not
       def locks

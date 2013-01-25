@@ -49,6 +49,10 @@ module MotherBrain
 
       def finalize
         log.info { "Lock Manager stopping..." }
+
+        locks.each do |lock|
+          lock.terminate if lock.alive?
+        end
       end
     end
   end
