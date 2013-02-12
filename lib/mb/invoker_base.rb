@@ -32,19 +32,30 @@ module MotherBrain
 
     include MB::Locks
 
-    NOCONFIG_TASKS = [
+    NO_CONFIG_TASKS = [
       "configure",
       "help",
       "version"
     ].freeze
+
+    NO_ENVIRONMENT_TASKS = (NO_CONFIG_TASKS + ["plugins"]).freeze
 
     attr_reader :config
 
     def initialize(args = [], options = {}, config = {})
       super
       opts = self.is_a?(Invoker) ? self.options.dup : self.options.merge(Invoker.invoked_opts)
-      unless NOCONFIG_TASKS.include? config[:current_task].try(:name)
+
+      @environment_option = opts[:environment]
+
+      unless NO_CONFIG_TASKS.include? config[:current_task].try(:name)
         @config = self.class.configure(opts)
+      end
+    end
+
+    no_tasks do
+      def environment_option
+        @environment_option
       end
     end
   end

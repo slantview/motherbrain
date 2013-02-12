@@ -21,10 +21,10 @@ module MotherBrain
         end
 
         klass.class_eval do
-          desc("nodes ENVIRONMENT", "List all nodes grouped by Group")
-          define_method(:nodes) do |environment|
-            MB.ui.say "Listing nodes for '#{component.name}' in '#{environment}':"
-            nodes = component.nodes(environment).each do |group, nodes|
+          desc("nodes", "List all nodes grouped by Group")
+          define_method(:nodes) do
+            MB.ui.say "Listing nodes for '#{component.name}' in '#{environment_option}':"
+            nodes = component.nodes(environment_option).each do |group, nodes|
               nodes.collect! { |node| "#{node.public_hostname} (#{node.public_ipv4})" }
             end
             MB.ui.say nodes.to_yaml

@@ -24,10 +24,10 @@ module MotherBrain
         end
 
         klass.class_eval do
-          desc("nodes ENVIRONMENT", "List all nodes grouped by Component and Group")
-          define_method(:nodes) do |environment|
-            MB.ui.say "Listing nodes in '#{environment}':"
-            nodes = plugin.nodes(environment).each do |component, groups|
+          desc("nodes", "List all nodes grouped by Component and Group")
+          define_method(:nodes) do
+            MB.ui.say "Listing nodes in '#{environment_option}':"
+            nodes = plugin.nodes(environment_option).each do |component, groups|
               groups.each do |group, nodes|
                 nodes.collect! { |node| "#{node.public_hostname} (#{node.public_ipv4})" }
               end
@@ -57,13 +57,13 @@ module MotherBrain
               default: false,
               desc: "Perform bootstrap even if the environment is locked",
               aliases: "-f"
-            desc("bootstrap ENVIRONMENT MANIFEST", "Bootstrap a manifest of node groups")
-            define_method(:bootstrap) do |environment, manifest_file|
+            desc("bootstrap MANIFEST", "Bootstrap a manifest of node groups")
+            define_method(:bootstrap) do |manifest_file|
               boot_options = Hash.new.merge(options).deep_symbolize_keys
               manifest     = MB::Bootstrap::Manifest.from_file(manifest_file)
 
               job = Application.bootstrap(
-                environment.freeze,
+                environment_option.freeze,
                 manifest.freeze,
                 plugin.freeze,
                 boot_options.freeze
@@ -96,13 +96,13 @@ module MotherBrain
               type: :boolean,
               default: false,
               desc: "Perform bootstrap even if the environment is locked"
-            desc("provision ENVIRONMENT MANIFEST", "Create a cluster of nodes and add them to a Chef environment")
-            define_method(:provision) do |environment, manifest_file|
+            desc("provision MANIFEST", "Create a cluster of nodes and add them to a Chef environment")
+            define_method(:provision) do |manifest_file|
               prov_options = Hash.new.merge(options).deep_symbolize_keys
               manifest     = Provisioner::Manifest.from_file(manifest_file)
 
               job = Application.provision(
-                environment.freeze,
+                environment_option.freeze,
                 manifest.freeze,
                 plugin.freeze,
                 prov_options.freeze
@@ -132,12 +132,12 @@ module MotherBrain
               default: false,
               desc: "Perform upgrade even if the environment is locked",
               aliases: "-f"
-            desc("upgrade ENVIRONMENT", "Upgrade an environment to the specified versions")
-            define_method(:upgrade) do |environment|
+            desc("upgrade", "Upgrade an environment to the specified versions")
+            define_method(:upgrade) do
               upgrade_options = Hash.new.merge(options).deep_symbolize_keys
 
               job = Application.upgrade(
-                environment.freeze,
+                environment_option.freeze,
                 plugin.freeze,
                 upgrade_options.freeze
               )

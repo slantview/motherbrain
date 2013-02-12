@@ -15,14 +15,35 @@ module MotherBrain
         # @param [MotherBrain::Command] command
         def define_command(command)
           # First argument is always 'environment'
-          arguments = ["environment"]
+          arguments = []
 
           command.execute.parameters.each do |type, parameter|
             arguments << parameter.to_s
           end
 
-          arguments_string = arguments.join(", ")
           description_string = arguments.map(&:upcase).join(" ")
+          
+          if arguments.any?
+            arguments_string = arguments.join(", ")
+            command_code = <<-RUBY
+              define_method(:#{command.name}) do |#{arguments_string}|
+                command.invoke(
+                  environment_option,
+                  #{arguments_string},
+                  force: options[:force]
+                )
+              end
+            RUBY
+          else
+            command_code = <<-RUBY
+              define_method(:#{command.name}) do
+                command.invoke(
+                  environment_option,
+                  force: options[:force]
+                )
+              end
+            RUBY
+          end
 
           method_option :force,
             type: :boolean,
@@ -30,14 +51,7 @@ module MotherBrain
             desc: "Run command even if the environment is locked",
             aliases: "-f"
           desc("#{command.name} #{description_string}", command.description.to_s)
-          instance_eval <<-RUBY
-            define_method(:#{command.name}) do |#{arguments_string}|
-              command.invoke(
-                #{arguments_string},
-                force: options[:force]
-              )
-            end
-          RUBY
+          instance_eval command_code
         end
     end
   end
